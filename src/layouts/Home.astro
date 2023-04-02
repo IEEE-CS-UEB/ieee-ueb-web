@@ -1,0 +1,49 @@
+---
+import EveryPage from "./EveryPage.astro";
+const { frontmatter } = Astro.props;
+
+let langPathname = Astro.url.pathname.length > 3 ? Astro.url.pathname.replace(/\/\w+$/, '') : Astro.url.pathname
+---
+
+<EveryPage>
+  <section id="Hero">
+    <div class="Left Container">
+      <h1>{frontmatter.heroTitle}</h1>
+      <!--Connect with like-minded individuals and develop your skills by working in exciting projects with El Bosque students. -->
+      <h3>{frontmatter.heroDesc}</h3>
+      <button class="Primary" onclick={`window.location.href='${langPathname}/societies/discover'`}>Join today!</button>
+    </div>
+    <div class="Img">
+      <img
+        alt="Estudiantes del capítulo Computer reunidos con nuevos integrantes"
+      />
+    </div>
+  </section>
+</EveryPage>
+
+<style>
+  nav {
+    background-color: white;
+    z-index: 1;
+  }
+
+  section {
+    display: flex;
+  }
+
+  #Hero {
+    flex-direction: row;
+  }
+
+  .Left {
+    margin-right: 30px;
+  }
+
+  #Hero .Img {
+    width: 1300px;
+    aspect-ratio: 16 / 9;
+    background-image: url(https://i.imgur.com/sxskFZ6.jpeg);
+    border-radius: 5px;
+    background-position: right;
+  }
+</style>

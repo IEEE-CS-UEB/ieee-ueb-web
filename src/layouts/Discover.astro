@@ -1,0 +1,247 @@
+---
+import { Icon } from "astro-icon";
+import EveryPage from "../layouts/EveryPage.astro";
+import { dissectPathname } from "../shenanigans/routing";
+
+const { frontmatter } = Astro.props;
+let { fullAstroPathname, langPathname } = dissectPathname(Astro.url.pathname);
+---
+<script>
+  const hideSectionWithTransition = (button, parent)=>{
+  document.querySelectorAll(`.InterestCard:not(:nth-child(${button}))`).forEach((elm) => elm.classList.toggle('HiddenSmall'));
+    setTimeout(
+      ()=>{document.querySelectorAll(`.InterestCard:nth-child(${button})`).forEach((elm) => elm.classList.toggle('HiddenSmall'))},
+      100
+    );
+    setTimeout(
+      ()=>{document.querySelectorAll(`.InterestCard:not(:nth-child(${button}))`).forEach((elm) => elm.classList.toggle('Hidden'))},
+      200
+    );
+  }
+
+  const redirectWithTransition = (button)=>{
+    document.querySelectorAll(`.InterestCard:not(:nth-child(${button}))`).forEach((elm) => elm.classList.toggle('HiddenSmall'));
+    setTimeout(
+      ()=>{document.querySelectorAll(`.InterestCard:nth-child(${button})`).forEach((elm) => elm.classList.toggle('HiddenSmall'))},
+      100
+    );
+    setTimeout(
+      ()=>{document.querySelectorAll(`.InterestCard:not(:nth-child(${button}))`).forEach((elm) => elm.classList.toggle('Hidden'))},
+      200
+    );
+    setTimeout(
+      ()=>{
+        document.querySelector(`.InterestCard:nth-child(${button})`).classList.add('Focus');
+        document.querySelector(`.InterestCard:nth-child(${button})`).classList.remove('HiddenSmall', 'Hidden');
+          },
+      200
+    );
+  }
+
+  const getNthChildOfTarget = (t) => Array.from(t.parentNode.children).findIndex(obj => obj === t)+1;
+
+  document.querySelectorAll('.InterestCard').forEach((cardElm) => {
+    cardElm.addEventListener('click', (e) => {
+      e.target.dataset.href.match(/(\/\w+){4}/) ? hideSectionWithTransition(getNthChildOfTarget(e.target), e.target.parentNode.parentNode) : redirectWithTransition(getNthChildOfTarget(e.target));
+      setTimeout(()=>{
+        window.location.href=e.target.dataset.href;
+      }, 350);
+    })
+  })
+</script>
+
+<EveryPage>
+  <div class="Page">
+    <header>
+      <h1>{frontmatter.title[1]}</h1>
+      <!-- Choose your calling -->
+      <span>{frontmatter.headerText[0]}</span>
+      <!-- Pick the topic that interests you the most -->
+      <span style="opacity: 60%;">{frontmatter.headerText[1]}</span>
+      <!-- We'll take you to the right society -->
+    </header>
+    <section id="Interests">
+      <div id="Base">
+        {
+          frontmatter.firstLayerTopics.map((topic) => (
+
+        <button class="InterestCard" data-href={`${langPathname}/societies/${topic.href}`}>
+          <header class="Container">
+            <Icon width="50px" name={topic.icon} />
+            <span>{topic.name}</span>
+            <!-- Software -->
+          </header>
+          <span class="Container">
+            {topic.desc}
+          </span>
+          <!-- Creating digital tools that can be used on the Web, Mobile, Desktop
+            and other systems -->
+          <div>
+            {frontmatter.loadingText}... <Icon
+              width="50px"
+              name="ph:spinner-bold"
+            />
+          </div>
+        </button>
+          ))
+        }
+      </div>
+    </section>
+
+    <footer>
+      {frontmatter.letMeInText[0]} <a href={`${langPathname}/societies`}>{frontmatter.letMeInText[1]}</a>
+    </footer>
+
+    <style>
+      h1 {
+        margin-bottom: 0;
+      }
+
+      .Page {
+        height: 57vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .Page > header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      #Interests {
+        margin-top: 70px;
+        height: 190px;
+        max-width: 75%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      #Interests > * {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+      }
+
+      .InterestCard {
+        animation: appear 200ms ease-in-out;
+        position: relative;
+        display: flex;
+        flex-direction: row;
+        filter: brightness(90%);
+        transition:
+          background-color,filter,opacity 200ms ease-in-out
+          transform 100ms ease-in-out;
+        background: none;
+        border: none;
+        padding: 0 0;
+        border-radius: 5px;
+      }
+
+      .InterestCard > * {
+        pointer-events: none;
+      }
+
+      .InterestCard:hover {
+        cursor: pointer;
+        filter: brightness(100%);
+        transform: scale(1.05);
+      }
+
+      .InterestCard:active {
+        filter: brightness(110%);
+        transform: scale(0.9);
+      }
+
+      .InterestCard.Focus {
+        box-shadow: 0 0 0 3px var(--theme-glo1);
+        pointer-events: none;
+      }
+
+      .InterestCard.Focus > *:nth-child(1) {
+        filter: brightness(0.5);
+      }
+
+      .InterestCard.Focus > *:nth-child(2) {
+        box-shadow: 500px 500px 0px rgba(0 0 0 / 0.5) inset;
+      }
+
+      .InterestCard.Focus > *:nth-child(3) {
+        opacity: 1;
+        color: white;
+        font-size: 20px;
+      }
+
+      .InterestCard > header {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        background-color: var(--theme-main);
+        color: var(--theme-glo1);
+        height: 80px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-width: 90px;
+      }
+
+      .InterestCard > header > span {
+        max-width: 70px;
+      }
+
+      .InterestCard > span {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        border-left: none;
+        height: 80px;
+        width: 150px;
+        text-align: center;
+      }
+
+      .InterestCard > *:nth-child(3) {
+        position: absolute;
+        left: 30%;
+        top: 30%;
+        color: var(--theme-for1);
+        opacity: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .InterestCard > *:nth-child(3) > svg {
+        animation: spin 1s ease-in-out infinite;
+      }
+
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes appear {
+        from { opacity: 0 } to { }
+      }
+
+      .HiddenSmall {
+        transform: scale(0.01);
+        opacity: 0;
+      }
+
+      footer {
+        transform: translateY(100px);
+      }
+    </style>
+  </div>
+</EveryPage>

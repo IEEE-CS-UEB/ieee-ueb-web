@@ -1,0 +1,9 @@
+.news {
+  overflow: auto;
+  display: flex;
+}
+
+.post {
+  margin-left:8px;
+  float: right;
+}

@@ -1,0 +1,102 @@
+.News{
+  margin: 50px;
+}
+
+.Post {
+  border-radius: 8px;
+  background-color: #fff;
+  margin-bottom: 60px;
+	width: 60vw;
+}
+
+.Post > .Img.Notext {
+  aspect-ratio: 18 / 9;
+	width: 100%;
+  border-radius: 5px;
+}
+
+.Post-image-bg {
+  background-color: #fff;
+}
+
+
+.Post-user {
+	display: flex;
+  padding: 16px;
+  align-items: center;
+}
+
+.Post-user-profilepicture {
+  width: 25px;
+  height: 25px;
+}
+
+.Post-user-profilepicture Img {
+  border-radius: 50%;
+}
+
+.Post-user-nickname {
+	padding: 0 5px;
+  color: #727272;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.Post-chapter {
+	padding: 0 5px;
+  margin-left: 1px;
+  color: #727272;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.Cont {
+  display: flex;
+  align-items: center;
+}
+
+.Post-caption {
+  width: 100%;
+  height:100%;
+  float: left;
+  margin: 1.5%;
+  color: #333333;
+  font-weight: bold;
+  font-size: 50px;
+}
+
+.Post-w {
+  width: 20%;
+  height:100%;
+  float: right;
+  align:right;
+  display: flex;
+  color: #333333;
+  font-size: 20px;
+}
+
+.Post-w-profilepicture {
+  width: 20px;
+  align:right;
+  height: 20px;
+}
+
+.Post-w-profilepicture Img {
+  border-radius: 70%;
+}
+
+.Post-w strong {
+  width: 80%;
+  height:100%;
+  float: right;
+  text-align:right;
+  display: flex;
+  color: #333333;
+  font-size: 20px;
+}
+
+.vjs-fade-out {
+  display: none;
+  visibility: hidden;
+  opacity: 0;
+}

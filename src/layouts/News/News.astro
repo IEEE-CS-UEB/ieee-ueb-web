@@ -1,0 +1,53 @@
+---
+import "./News.css";
+import Post from "../../components/ArticlePreview/ArticlePreview.astro";
+import Filter from "../../components/Filter.astro";
+import EveryPage from "../EveryPage.astro";
+
+const posts = [
+  {
+    author: "Juan Castillo",
+    imagen: "https://s1.significados.com/foto/tecnologia-dura-fa.jpg",
+    title: "How I built this",
+    views: "12.8K",
+    chapter: "Computer",
+    type: "News",
+  },
+  {
+    author: "Isabella Camargo",
+    imagen:
+      "https://concepto.de/wp-content/uploads/2014/08/tecnologia-e1551386720574-800x412.jpg",
+    title: "Tecnologia en casa",
+    views: "124",
+    chapter: "IoT",
+    type: "Blog",
+  },
+];
+---
+
+<EveryPage>
+  <div class="News">
+    <div
+      style={{
+        position: "fixed",
+        width: "25%",
+      }}
+    >
+      <Filter />
+    </div>
+
+    <div class="post">
+      {
+        posts.map(({ author, imagen, title, views, chapter, type }) => (
+          <Post {...{ author, imagen, title, views, chapter, type }} />
+        ))
+      }
+    </div>
+  </div>
+</EveryPage>
+
+<style>
+  body {
+    background-color: #f3f3f3;
+  }
+</style>

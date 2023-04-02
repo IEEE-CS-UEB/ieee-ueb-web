@@ -1,6 +1,4 @@
 ---
-import '../styles/blog.css';
-
 export interface Props {
 	title: string;
 	description: string;
@@ -12,10 +10,11 @@ const { title, description, permalink } = Astro.props;
 <!-- Global Metadata -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width" />
-<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+<link rel="icon" type="image/x-icon" href="/ueb_favicon_ieee.ico" />
+<link rel="stylesheet" href="https://ieee-cs-ueb.github.io/Flora/src/flora.css" />
 
 <!-- Primary Meta Tags -->
-<title>{title}</title>
+<title>IEEE Unbosque - {title}</title>
 <meta name="title" content={title} />
 <meta name="description" content={description} />
 

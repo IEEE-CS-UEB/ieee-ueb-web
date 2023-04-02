@@ -1,0 +1,87 @@
+---
+import { Icon } from "astro-icon";
+import Dropdown from "./Dropdown";
+import { dissectPathname } from "../shenanigans/routing";
+
+type Link = {
+  name: string;
+  url: string;
+};
+
+type NavProps = {
+  links: Link[];
+};
+
+const { links } = Astro.props;
+
+let { fullAstroPathname, langPathname } = dissectPathname(Astro.url.pathname)
+---
+
+<script>
+  document.querySelectorAll("#Lang_Options option").forEach((option) => {
+    option.addEventListener("click", (e) => {
+      e.preventDefault();
+      window.location.href = `/${
+        e.target.value
+      }${window.location.pathname.replace(/^\/\w\w/gm, "")}`;
+      localStorage.setItem("lang", e.target.value);
+    });
+  });
+</script>
+
+<nav>
+  <div id="Logo" class="Noclick"></div>
+  <ul>
+    {
+      links.map(({ name, href }) => (
+        <li
+          class={
+            href === fullAstroPathname.replace(/^\/\w\w\/|\/$|\/\w+$/gm, "")
+              ? "Here"
+              : ""
+          }
+        >
+          <a href={`${langPathname}${href ? "/" : ""}${href}`}>{name}</a>
+        </li>
+      ))
+    }
+  </ul>
+  <ul>
+    <li style="padding: 7.5px 0">
+      <Dropdown
+        client:load
+        id="Lang"
+        hover={false}
+        wrapsMarginTop="10px"
+        optionsTop="53px"
+      >
+        <Icon slot="wraps" name="ph:translate" width="30px" />
+        <Fragment
+          slot="options"
+          set:html={`
+          <option value="en">English (US)</option>
+          <option value="es">Español (MX)</option>
+          <option value="pt">Portug. (BR)</option>
+		`}
+        />
+      </Dropdown>
+    </li>
+    <li style="padding: 15.5px 0; padding-bottom: 9.5px">
+      <Icon slot="wraps" name="ph:moon" width="30px" />
+    </li>
+  </ul>
+</nav>
+
+<style>
+  nav {
+    background-color: white;
+  }
+
+  nav > #Logo.Noclick {
+    background-image: url(https://i.imgur.com/zyMtf5Y.png);
+    background-repeat: no-repeat;
+    background-position: left;
+    width: 100px;
+    padding-right: 64px;
+  }
+</style>
