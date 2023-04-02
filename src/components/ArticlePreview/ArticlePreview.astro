@@ -4,13 +4,18 @@ import { Icon } from "astro-icon";
 import { dissectPathname } from "../../shenanigans/routing";
 import fs from 'fs';
 
-const { author, imagen, title, views, chapter, type } = Astro.props;
-let { langPathname } = dissectPathname(Astro.url.pathname);
+const { author, img, title, views, society, type, url } = Astro.props;
+let { lang } = dissectPathname(Astro.url.pathname);
 
 const articleIDs: {} = JSON.parse(fs.readFileSync('src/data/article-ids.json').toString())
 
 const getArticleID = (articleName: string) => {
-	return articleIDs[langPathname.replace(/\//gm, '')][articleName];
+	const requiredArticleName = articleName.replace(/(\/.+)(?=\/.+$)/gm, '').replace(/\//, '')
+	// console.log(`artname: ${requiredArticleName}`)
+	// console.log('artIDs:')
+	// console.log(articleIDs)
+	// console.log(`[${lang}][${requiredArticleName}]`)
+	return articleIDs[lang][requiredArticleName];
 }
 ---
 
@@ -18,7 +23,7 @@ const getArticleID = (articleName: string) => {
 				<article class="Post Container">
 					{/* Imagen Enfocada de Flora.css */}
 					<div class="Img Notext"
-						style={{backgroundImage: `url(${imagen})`}}
+						style={{backgroundImage: `url(${img})`}}
 						>
 							{/* <img> por dentro (por temas de accesibilidad) */}
 							<img alt={`Image for article ${title} by ${views}`}/>
@@ -34,7 +39,7 @@ const getArticleID = (articleName: string) => {
 						</div>
 						<span>|</span>
 						<div class="Post-chapter">
-							<span>{chapter}</span>
+							<span>{society}</span>
 						</div>
 						
 						<div class="Badge" style={{
@@ -45,7 +50,7 @@ const getArticleID = (articleName: string) => {
 					<div>
 						<div class="Cont">
 							<div class="Post-caption">
-                <a class="a" href= {`posts/${getArticleID(author)}`}>
+                <a class="a" href= {`posts/${getArticleID(url)}`}>
 								<h1>{title}</h1>
                   </a>
 							</div>

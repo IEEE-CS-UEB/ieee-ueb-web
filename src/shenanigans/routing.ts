@@ -3,7 +3,8 @@ const dissectPathname = (fullAstroPathname) => {
     fullAstroPathname.length > 3
       ? fullAstroPathname.replace(/(?<!^)(\/\w+)+\/\w+$|(?<!^)\/\w+$/gm, "")
       : fullAstroPathname;
-  return { fullAstroPathname, langPathname };
+  const lang = langPathname.replace(/\//gm, '');
+  return { fullAstroPathname, langPathname, lang };
 };
 
 export { dissectPathname };

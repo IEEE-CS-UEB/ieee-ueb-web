@@ -3,8 +3,9 @@ import "./News.css";
 import Post from "../../components/ArticlePreview/ArticlePreview.astro";
 import Filter from "../../components/Filter.astro";
 import EveryPage from "../EveryPage.astro";
+import { dissectPathname } from "../../shenanigans/routing";
 
-const posts = [
+/*const posts = [
   {
     author: "Juan Castillo",
     imagen: "https://s1.significados.com/foto/tecnologia-dura-fa.jpg",
@@ -22,7 +23,17 @@ const posts = [
     chapter: "IoT",
     type: "Blog",
   },
-];
+];*/
+
+const { lang } = dissectPathname(Astro.url.pathname);
+
+const allPosts = await Astro.glob('../../pages/*/posts/*.md');
+
+const postsSourcePath: RegExp = new RegExp(`\/${lang}\/`, 'gm')
+const relevantPosts = allPosts.filter((post) => post.file.match(postsSourcePath) && !post.url.match(/posts$/));
+
+console.log(relevantPosts.map((post) => post.url))
+//console.log(relevantPosts);
 ---
 
 <EveryPage>
@@ -38,8 +49,8 @@ const posts = [
 
     <div class="post">
       {
-        posts.map(({ author, imagen, title, views, chapter, type }) => (
-          <Post {...{ author, imagen, title, views, chapter, type }} />
+        relevantPosts.map(({frontmatter: { author, img, title, society, type }, url}) => (
+          <Post {...{ author, img, title, society, type, url }} />
         ))
       }
     </div>
