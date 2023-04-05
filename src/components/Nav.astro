@@ -2,6 +2,7 @@
 import { Icon } from "astro-icon";
 import Dropdown from "./Dropdown";
 import { dissectPathname } from "../shenanigans/routing";
+import { log } from "astro/dist/core/logger/core";
 
 type Link = {
   name: string;
@@ -14,7 +15,7 @@ type NavProps = {
 
 const { links } = Astro.props;
 
-let { fullAstroPathname, langPathname } = dissectPathname(Astro.url.pathname)
+let { fullAstroPathname, langPathname, lang } = dissectPathname(Astro.url.pathname)
 ---
 
 <script>
@@ -41,7 +42,7 @@ let { fullAstroPathname, langPathname } = dissectPathname(Astro.url.pathname)
               : ""
           }
         >
-          <a href={`${langPathname}${href ? "/" : ""}${href}`}>{name}</a>
+          <a href={`/${lang}/${href}`}>{name}</a>
         </li>
       ))
     }

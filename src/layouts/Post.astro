@@ -1,0 +1,84 @@
+---
+import EveryPage from "./EveryPage.astro";
+const { frontmatter } = Astro.props;
+---
+
+<EveryPage>
+<div class="Page">
+  <div class="Img" style={
+          `background-image: url(${frontmatter.img});
+          width: 100%;
+          height: 300px;`}
+       ></div>
+  <div id="Crumbs">
+    <a href="/Blog?society=Computer">{frontmatter.society}</a>
+    <a href={`/Blog?society=Computer&type=${frontmatter.type}s`}>{frontmatter.type}s</a>
+    {frontmatter.title}
+  </div>
+  <div id="Content" class="Container">
+    <div id="Meta">
+      <div class="Author Img" style="background-image: url(https://i.imgur.com/kW2Olq1.png);"></div>
+      <div class="Author Name">{frontmatter.author} | {frontmatter.society}</div>
+      <div class="Badge" style="
+  background-color: var(--theme-main);">Blog</div>
+    </div>
+    <h1>{frontmatter.title}</h1>
+    <slot/>
+  </div>
+</div>
+</EveryPage>
+
+<style>
+    section {
+  display: flex;
+}
+
+body {
+  background-color: #f3f3f3;
+}
+
+.Container {
+  background-color: #ffffff;
+  border: 1px solid var(--theme-stroke);
+  border-radius: 10px;
+  padding: 30px 25px;
+}
+
+#Crumbs {
+  padding: 10px 0;
+  color: var(--theme-for1);
+}
+
+#Crumbs > a {
+  text-decoration: none;
+  color: var(--theme-for1);
+}
+
+#Crumbs > a::after {
+    content: '\003E';
+    margin-left: 6px; margin-right: 4px;
+}
+
+#Meta > *,
+#Meta > * > *:not(.Img) {
+  display: inline;
+}
+
+nav {
+  background-color: #ffffff;
+}
+
+.Page {
+  margin: 0 0;
+}
+
+.Page > *:not(.Img) {
+  margin: 0 15px;
+}
+
+#Meta .Author.Pic {
+  width: 30px;
+  aspect-ratio: 1 / 1;
+  background-position: center;
+}
+</style>

@@ -4,35 +4,62 @@ import Post from "../../components/ArticlePreview/ArticlePreview.astro";
 import Filter from "../../components/Filter.astro";
 import EveryPage from "../EveryPage.astro";
 import { dissectPathname } from "../../shenanigans/routing";
-
-/*const posts = [
-  {
-    author: "Juan Castillo",
-    imagen: "https://s1.significados.com/foto/tecnologia-dura-fa.jpg",
-    title: "How I built this",
-    views: "12.8K",
-    chapter: "Computer",
-    type: "News",
-  },
-  {
-    author: "Isabella Camargo",
-    imagen:
-      "https://concepto.de/wp-content/uploads/2014/08/tecnologia-e1551386720574-800x412.jpg",
-    title: "Tecnologia en casa",
-    views: "124",
-    chapter: "IoT",
-    type: "Blog",
-  },
-];*/
+import axios from "axios";
+import fs from "fs";
 
 const { lang } = dissectPathname(Astro.url.pathname);
 
-const allPosts = await Astro.glob('../../pages/*/posts/*.md');
+const allPosts = await Astro.glob("../../pages/*/posts/*.md");
+//console.log(allPosts)
 
-const postsSourcePath: RegExp = new RegExp(`\/${lang}\/`, 'gm')
-const relevantPosts = allPosts.filter((post) => post.file.match(postsSourcePath) && !post.url.match(/posts$/));
+const postsSourcePath: RegExp = new RegExp(`\/${lang}\/`, "gm");
+const relevantPosts = allPosts.filter(
+  (post) => post.file.match(postsSourcePath) && !post.url.match(/posts$/)
+);
 
-console.log(relevantPosts.map((post) => post.url))
+const articleIDs: {} = JSON.parse(
+  fs.readFileSync("src/data/article-ids.json").toString()
+);
+
+const namifyURL = (articleURL: string) => {
+  return articleURL
+    .replace(/(\/.+)(?=\/.+$)/gm, "")
+    .replace(/\//gm, "")
+};
+
+const getArticleID = (articleName: string) => {
+  const requiredArticleName = namifyURL(articleName);
+  // console.log(`artname: ${requiredArticleName}`)
+  // console.log('artIDs:')
+  // console.log(articleIDs)
+  // console.log(`[${lang}][${requiredArticleName}]`);
+  return articleIDs[lang][requiredArticleName];
+};
+
+// POSTS VIEWS
+// Primero sin paginación, luego se agrega
+let postViewsData = await axios.request({
+  method: "GET",
+  url: "https://ieee-ueb-db.cfuendev.repl.co/views",
+  headers: { "content-type": "application/json" },
+});
+
+//console.log(postViewsData.data);
+
+const postViews: [{ id; article_id; article_views }] = await postViewsData.data;
+
+const getPostViewsFromID = (id: number) => {
+  if (postViews || postViews?.find) {
+    return postViews.find((views) => views.id === id).article_views;
+  } else {
+    return "[Error]";
+  }
+};
+
+// FILTER POSTS
+
+// LOGGING STUFF
+//console.log(relevantPosts.map((post) => post.url))
 //console.log(relevantPosts);
 ---
 
@@ -49,9 +76,21 @@ console.log(relevantPosts.map((post) => post.url))
 
     <div class="post">
       {
-        relevantPosts.map(({frontmatter: { author, img, title, society, type }, url}) => (
-          <Post {...{ author, img, title, society, type, url }} />
-        ))
+        relevantPosts.map(
+          ({ frontmatter: { author, img, title, society, type }, url }) => (
+            <Post
+              {...{
+                author,
+                img,
+                title,
+                society,
+                type,
+                href: namifyURL(url),
+                views: getPostViewsFromID(getArticleID(url)),
+              }}
+            />
+          )
+        )
       }
     </div>
   </div>

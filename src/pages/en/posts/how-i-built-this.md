@@ -5,6 +5,6 @@ description: Learn how we built the blog you're reading this article in with $0 
 society: Computer
 type: Blog
 publishDate: 16 May 2022
-layout: ../../../layouts/BlogPost.astro
+layout: ../../../layouts/Post.astro
 # authorURL:
 ---

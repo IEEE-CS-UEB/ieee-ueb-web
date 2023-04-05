@@ -1,22 +1,8 @@
 ---
 import "./ArticlePreview.css";
 import { Icon } from "astro-icon";
-import { dissectPathname } from "../../shenanigans/routing";
-import fs from 'fs';
 
-const { author, img, title, views, society, type, url } = Astro.props;
-let { lang } = dissectPathname(Astro.url.pathname);
-
-const articleIDs: {} = JSON.parse(fs.readFileSync('src/data/article-ids.json').toString())
-
-const getArticleID = (articleName: string) => {
-	const requiredArticleName = articleName.replace(/(\/.+)(?=\/.+$)/gm, '').replace(/\//, '')
-	// console.log(`artname: ${requiredArticleName}`)
-	// console.log('artIDs:')
-	// console.log(articleIDs)
-	// console.log(`[${lang}][${requiredArticleName}]`)
-	return articleIDs[lang][requiredArticleName];
-}
+const { author, img, title, society, type, href, views = 0 } = Astro.props;
 ---
 
 		<div id="Posts">
@@ -50,13 +36,13 @@ const getArticleID = (articleName: string) => {
 					<div>
 						<div class="Cont">
 							<div class="Post-caption">
-                <a class="a" href= {`posts/${getArticleID(url)}`}>
+                <a class="a" href= {`posts/${href}`}>
 								<h1>{title}</h1>
                   </a>
 							</div>
 							<div class="Post-w">
 								<Icon name="ph:eyeglasses" width="24px" style={{paddingRight: '5px'}}/>
-								<strong>{views}</strong>
+								<strong>{views ? views : 0}</strong>
 
 							</div>
 						</div>
