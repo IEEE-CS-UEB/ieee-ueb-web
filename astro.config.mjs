@@ -1,6 +1,6 @@
 import { defineConfig } from 'astro/config';
 import NetlifyCMS from 'astro-netlify-cms';
-import posts from './src/schemas/posts';
+import { englishPosts, spanishPosts } from './src/schemas/posts';
 
 import react from "@astrojs/react";
 
@@ -14,11 +14,11 @@ export default defineConfig({
         branch: 'latest'
       },
       // Configure where our media assets are stored & served from
-      media_folder: 'public/assets/blog',
-      public_folder: '/assets/blog',
+      media_folder: 'public/',
+      public_folder: 'public/',
       // Configure the content collections
-      collections: [posts]
+      collections: [englishPosts, spanishPosts]
     },
-    previewStyles: ['']
+    previewStyles: ['https://github.com/IEEE-CS-UEB/Flora/blob/dev/src/flora.css']
   }), react()]
 });

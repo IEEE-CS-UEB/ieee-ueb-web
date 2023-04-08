@@ -1,61 +1,93 @@
 import { CmsCollection } from "netlify-cms-core";
+import societies from "../data/societies";
+import engineers from "../data/engineers";
 
-const posts: CmsCollection = {
-  "name": "posts",
-  "label": "Blog Posts",
-  "label_singular": "Blog Post",
-  "folder": "src/pages/posts/{en,es}/",
-  "create": true,
-  "delete": true,
-  "fields": [
+const englishPosts: CmsCollection = {
+  name: "englishPosts",
+  label: "Publicaciones en Inglés",
+  label_singular: "Publicación en Inglés",
+  folder: "src/pages/en/posts/",
+  create: true,
+  delete: true,
+  fields: [
     {
-      "name": "title",
-      "widget": "string",
-      "label": "Post Title"
+      label: "Title",
+      name: "title",
+      widget: "string",
     },
     {
-      "name": "publishDate",
-      "widget": "datetime",
-      "format": "DD MMM YYYY",
-      "date_format": "DD MMM YYYY",
-      "time_format": false,
-      "label": "Publish Date"
+      label: "Society (Capítulo)",
+      name: "society",
+      widget: "select",
+      options: societies,
     },
     {
-      "name": "author",
-      "widget": "string",
-      "label": "Author Name",
-      "required": false
+      label: "Type",
+      name: "type",
+      widget: "select",
+      options: ["Blog", "News"]
     },
     {
-      "name": "authorURL",
-      "widget": "string",
-      "label": "Author URL",
-      "required": false
+      label: "Author",
+      name: "author",
+      widget: "select",
+      options: Object.entries(engineers).map(e => e[1]),
     },
     {
-      "name": "description",
-      "widget": "string",
-      "label": "Description",
-      "required": false
+      label: "Image",
+      name: "img",
+      widget: "image",
     },
     {
-      "name": "body",
-      "widget": "markdown",
-      "label": "Post Body"
+      label: "Body",
+      name: "body",
+      widget: "markdown",
     },
-    {
-      "name": "layout",
-      "widget": "select",
-      "default": "../../layouts/BlogPost.astro",
-      "options": [
-        {
-          "label": "Blog Post",
-          "value": "../../layouts/BlogPost.astro"
-        }
-      ]
-    }
-  ]
-}
+  ],
+};
 
-export default posts;
+const spanishPosts: CmsCollection = {
+  name: "spanishPosts",
+  label: "Publicaciones en Español",
+  label_singular: "Publicación en Español",
+  folder: "src/pages/es/posts/",
+  create: true,
+  delete: true,
+  fields: [
+    {
+      label: "Título",
+      name: "title",
+      widget: "string",
+    },
+    {
+      label: "Capítulo / Sociedad",
+      name: "society",
+      widget: "select",
+      options: societies,
+    },
+    {
+      label: "Tipo",
+      name: "type",
+      widget: "select",
+      options: ["Blog", "News"]
+    },
+    {
+      label: "Autor",
+      name: "author",
+      widget: "select",
+      options: Object.entries(engineers).map(e => e[1]),
+    },
+    {
+      label: "Imagen",
+      name: "img",
+      widget: "image",
+    },
+    {
+      label: "Cuerpo",
+      name: "body",
+      widget: "markdown",
+    },
+  ],
+};
+
+export { englishPosts, spanishPosts };

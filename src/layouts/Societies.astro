@@ -1,0 +1,217 @@
+---
+import { Icon } from "astro-icon";
+import EveryPage from "../layouts/EveryPage.astro";
+import { dissectPathname } from "../shenanigans/routing";
+
+const { frontmatter } = Astro.props;
+let { fullAstroPathname, langPathname } = dissectPathname(Astro.url.pathname);
+---
+
+<script>
+  let society: number = 0;
+
+  document.querySelectorAll('#Societies > .Society.Card').forEach((sc) => {
+    sc.addEventListener('click', () => {
+      const society = document.querySelector('#Society')
+      society.classList.toggle('Hidden');
+      setTimeout(() => scrollTo(0, society.getBoundingClientRect().y), 300);
+    });
+  });
+</script>
+
+<EveryPage>
+  <div class="Page">
+    <h2>Explore Societies</h2>
+    <div id="Societies">
+      {
+
+      }
+      <button class="Society Card Container">
+        <div
+          class="Img Notext"
+          style="background-image:url(https://img.ifunny.co/images/090dec19d8591d21945a3fee02930e1d93417466382a4526114ab3a2df5d95de_1.jpg); width:225px; height:160px;"
+        >
+          <img />
+        </div>
+        <h2>Computer Society</h2>
+        <div class="Info">
+          <iconify-icon icon="ph:users" width="20px"></iconify-icon>
+          <span>13</span>
+          <iconify-icon icon="ph:newspaper" width="20px"></iconify-icon>
+          <span>30</span>
+        </div>
+      </button>
+      <div
+        id="Society"
+        class="Hidden Container"
+        style="padding: 0; padding-bottom: 20px; overflow: clip; margin-top: 30px;"
+      >
+        <div
+          class="Img Notext"
+          style="background-image: url(https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80); width: 100%; height: 200px;"
+        >
+          <img alt="XD" />
+        </div>
+        <header
+          style="position: relative; border-bottom: 1px solid var(--theme-stroke); margin-bottom: 15px;"
+        >
+          <div class="Img Notext" style="background-image:url();">
+            <img alt="Loguito" />
+          </div>
+          <iconify-icon
+            icon="ph:user-circle"
+            width="100px"
+            style="position: absolute; top: -30px;"></iconify-icon>
+          <h1>Computer Society</h1>
+        </header>
+        <div id="Info" class="Container">
+          <div class="Options">
+            <button> Desc.</button>
+            <button> Mission</button>
+            <button> Vision</button>
+          </div>
+          <div class="Text">INFO BACANA</div>
+        </div>
+        <div id="Engineers">
+          <div class="Engineer Card Container">
+            <div
+              class="Img Notext"
+              style="background-image:url(https://img.ifunny.co/images/090dec19d8591d21945a3fee02930e1d93417466382a4526114ab3a2df5d95de_1.jpg); width:225px; height:160px;"
+            >
+              <img alt="Chad" />
+            </div>
+            <h2>Juan Castillo</h2>
+            <div class="Info">
+              <iconify-icon icon="ph:newspaper" width="20px"></iconify-icon>
+              <span>30</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</EveryPage>
+
+<style>
+  html {
+    scroll-behavior: smooth;
+  }
+
+  #Societies {
+    margin-bottom: 48px;
+    positon: relative;
+  }
+
+  .Card {
+    background: none;
+    width: fit-content;
+  }
+
+  .Society:hover {
+    opacity: 0.9;
+    cursor: pointer;
+    transform: scale(0.97);
+  }
+
+  .Society:active {
+    opacity: 0.5;
+    transform: scale(0.93);
+  }
+
+  .Society.Focus {
+    opacity: 0.8;
+  }
+
+  .Card > h2 {
+    text-align: left;
+  }
+
+  .Card > .Img {
+    border-radius: 5px;
+    margin-bottom: 15px;
+  }
+
+  .Card > .Info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .Society > .Info > *:not(:nth-child(1)) {
+    margin-left: 15px;
+  }
+
+  .Society > .Info > *:nth-child(3) {
+    margin-left: 30px;
+  }
+
+  .Society > .Info > *:nth-child(5) {
+    margin-left: 30px;
+  }
+
+  button.Primary.Small {
+    padding: 10px 15px;
+    font-size: 15px;
+  }
+
+  /* h2 Semibold, h1 Extrabold */
+
+  #Society {
+    position: relative;
+  }
+
+  #Society:not(.Hidden) {
+    animation: appear 300ms ease-in-out;
+  }
+
+  @keyframes appear {
+    from { opacity: 0 } to {}
+  }
+
+  #Society > header {
+    min-height: 128px;
+  }
+
+  #Society > * {
+    padding: 0px 20px;
+  }
+
+  #Society h1 {
+    margin-top: 10px;
+    padding-left: 105px;
+  }
+
+  .Engineer.Card > .Info > *:not(:nth-child(1)) {
+    margin-left: 15px;
+  }
+
+  #Society > #Engineers {
+    margin-left: 282px;
+  }
+
+  #Society > #Info {
+    position: absolute;
+    margin-left: 20px;
+    min-width: 20px;
+    top: 286px;
+    box-shadow: 0px 1px 6px 2px #0000000f;
+    padding: 20px;
+    background-color: var(--theme-back);
+  }
+
+  #Society > #Info > .Options {
+    border-bottom: 1px solid var(--theme-stroke);
+    font-weight: 600;
+    padding-bottom: 10px;
+  }
+
+  #Society > #Info > .Options > * {
+    margin: 0px 5px;
+    padding: 0 5px;
+    font-weight: 600;
+  }
+
+  #Society > #Info > .Text {
+    padding-top: 20px;
+  }
+</style>
