@@ -8,6 +8,8 @@ import axios from "axios";
 import fs from "fs";
 
 const { lang } = dissectPathname(Astro.url.pathname);
+const { filterText } = Astro.props.frontmatter;
+console.log(filterText)
 
 const allPosts = await Astro.glob("../../pages/*/posts/*.md");
 //console.log(allPosts)
@@ -71,7 +73,7 @@ const getPostViewsFromID = (id: number) => {
         width: "25%",
       }}
     >
-      <Filter />
+      <Filter text={filterText} />
     </div>
 
     <div class="post">

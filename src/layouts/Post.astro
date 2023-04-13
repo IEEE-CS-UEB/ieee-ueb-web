@@ -13,7 +13,7 @@ const { frontmatter } = Astro.props;
   <div id="Crumbs">
     <a href="/Blog?society=Computer">{frontmatter.society}</a>
     <a href={`/Blog?society=Computer&type=${frontmatter.type}s`}>{frontmatter.type}s</a>
-    {frontmatter.title}
+    <span>{frontmatter.title}</span>
   </div>
   <div id="Content" class="Container">
     <div id="Meta">
@@ -54,18 +54,28 @@ body {
   color: var(--theme-for1);
 }
 
-#Crumbs > a::after {
+#Crumbs > a:not(:first-of-type) {
+  margin-left: 25px;
+}
+
+#Crumbs > a:hover {
+  text-decoration: underline;
+}
+
+#Crumbs > a:after {
     content: '\003E';
-    margin-left: 6px; margin-right: 4px;
+    margin: 0 10px;
+    position: absolute;
+    pointer-events: none;
+}
+
+#Crumbs > span {
+  margin-left: 25px;
 }
 
 #Meta > *,
 #Meta > * > *:not(.Img) {
   display: inline;
-}
-
-nav {
-  background-color: #ffffff;
 }
 
 .Page {

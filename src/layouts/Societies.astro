@@ -4,43 +4,130 @@ import EveryPage from "../layouts/EveryPage.astro";
 import { dissectPathname } from "../shenanigans/routing";
 
 const { frontmatter } = Astro.props;
-let { fullAstroPathname, langPathname } = dissectPathname(Astro.url.pathname);
+let { fullAstroPathname, langPathname, lang } = dissectPathname(
+  Astro.url.pathname
+);
+
+import societies from "../data/societies";
+import engineers from "../data/engineers";
 ---
 
 <script>
-  let society: number = 0;
+  import societies from "../data/societies";
+  import engineers from "../data/engineers";
+  let societyIndex: number = 0;
 
-  document.querySelectorAll('#Societies > .Society.Card').forEach((sc) => {
-    sc.addEventListener('click', () => {
-      const society = document.querySelector('#Society')
-      society.classList.toggle('Hidden');
-      setTimeout(() => scrollTo(0, society.getBoundingClientRect().y), 300);
+  const getUniques = (arr: {}[], prop: string) => {
+    let uniqueBuffer: any = [];
+    let uniqueResult: any = [];
+    arr.forEach((arrItem: any) => {
+      uniqueBuffer.find((buffer: any) => buffer === arrItem[prop]) == undefined
+        ? uniqueBuffer.push(arrItem[prop])
+        : uniqueBuffer.push(null);
     });
+    uniqueBuffer.forEach((buffer: any) => {
+      buffer === null
+        ? null
+        : uniqueResult.push(arr[uniqueBuffer.indexOf(buffer)]);
+    });
+    return uniqueResult;
+  };
+
+  let engineersBySociety: { [key: string]: any } = {};
+  getUniques(engineers, "society").forEach((e) => {
+    const societyName = societies[e.society].name.toLowerCase();
+    engineersBySociety[societyName] = [];
   });
+  engineers.forEach((e) => {
+    engineersBySociety[societies[e.society].name.toLowerCase()].push(e);
+  });
+
+  const engineerCardElm = (name: string, img: string) => `
+    <div class="Engineer Card Container">
+      <div
+        class="Img Notext"
+        style="background-image:url(${img}); width:225px; height:160px;"
+      >
+        <img alt="Chad" />
+      </div>
+      <h2>${name}</h2>
+      <div class="Info">
+        <Icon name="ph:newspaper" width="20px" />
+        <span>[Error]</span>
+      </div>
+    </div>
+  `;
+
+  document
+    .querySelectorAll("#Societies > .Society.Card")
+    .forEach((sc: HTMLElement) => {
+      sc.addEventListener("click", () => {
+        const societyElm: HTMLElement = document.querySelector("#Society");
+        societyIndex = Number(sc.dataset.societyId);
+        // Change societyElm (#Society)
+        societyElm.querySelector("#Name").textContent =
+          societies[societyIndex].name;
+        const lang = document.querySelector(".Page").dataset.lang;
+        societyElm.querySelector("#Description").textContent =
+          societies[societyIndex][lang].desc;
+        societyElm.querySelector("#Mission").textContent =
+          societies[societyIndex][lang].mission;
+        societyElm.querySelector("#Vision").textContent =
+          societies[societyIndex][lang].vision;
+        societyElm.classList.toggle("Hidden");
+        societyElm.querySelector("#Engineers").innerHTML = ''
+        societyElm.querySelector("#Engineers").innerHTML = engineersBySociety[societies[societyIndex].name.toLowerCase()].map(e => engineerCardElm(e.name, e.img))
+        societyElm.querySelector("#Engineers").innerHTML = document.querySelector("#Engineers").innerHTML.replace(',', '');
+        setTimeout(
+          () => scrollTo(0, societyElm.getBoundingClientRect().y),
+          300
+        );
+      });
+    });
+
+  const revealInfo = (info) => {
+    document.querySelectorAll("#Society > #Info > .Text").forEach((t) => {
+      console.log(t.id);
+
+      t.classList.remove("Hidden");
+      if (t.id !== info) {
+        t.classList.add("Hidden");
+      }
+    });
+  };
+
+  document
+    .querySelectorAll("#Society > #Info > .Options > button")
+    .forEach((b) => {
+      console.log(b);
+      b.addEventListener("click", (e) => revealInfo(e.target.dataset.info));
+    });
+
 </script>
 
 <EveryPage>
-  <div class="Page">
+  <div class="Page" data-lang={lang}>
     <h2>Explore Societies</h2>
     <div id="Societies">
       {
-
+        societies.map((s, i) => (
+          <button data-society-id={i} class="Society Card Container">
+            <div
+              class="Img Notext"
+              style={`background-image:url(${s.img}); width:225px; height:160px;`}
+            >
+              <img />
+            </div>
+            <h2>{s.name}</h2>
+            <div class="Info">
+              <Icon name="ph:users" width="20px" />
+              <span>[Error]</span>
+              <Icon name="ph:newspaper" width="20px" />
+              <span>[Error]</span>
+            </div>
+          </button>
+        ))
       }
-      <button class="Society Card Container">
-        <div
-          class="Img Notext"
-          style="background-image:url(https://img.ifunny.co/images/090dec19d8591d21945a3fee02930e1d93417466382a4526114ab3a2df5d95de_1.jpg); width:225px; height:160px;"
-        >
-          <img />
-        </div>
-        <h2>Computer Society</h2>
-        <div class="Info">
-          <iconify-icon icon="ph:users" width="20px"></iconify-icon>
-          <span>13</span>
-          <iconify-icon icon="ph:newspaper" width="20px"></iconify-icon>
-          <span>30</span>
-        </div>
-      </button>
       <div
         id="Society"
         class="Hidden Container"
@@ -58,35 +145,24 @@ let { fullAstroPathname, langPathname } = dissectPathname(Astro.url.pathname);
           <div class="Img Notext" style="background-image:url();">
             <img alt="Loguito" />
           </div>
-          <iconify-icon
-            icon="ph:user-circle"
+          <Icon
+            name="ph:user-circle"
             width="100px"
-            style="position: absolute; top: -30px;"></iconify-icon>
-          <h1>Computer Society</h1>
+            style="position: absolute; top: -30px;"
+          />
+          <h1 id="Name">Computer Society</h1>
         </header>
         <div id="Info" class="Container">
           <div class="Options">
-            <button> Desc.</button>
-            <button> Mission</button>
-            <button> Vision</button>
+            <button data-info="Description"> Desc.</button>
+            <button data-info="Mission"> Mission</button>
+            <button data-info="Vision"> Vision</button>
           </div>
-          <div class="Text">INFO BACANA</div>
+          <div id="Description" class="Text">INFO BACANA</div>
+          <div id="Mission" class="Text Hidden">INFO BACANA</div>
+          <div id="Vision" class="Text Hidden">INFO BACANA</div>
         </div>
-        <div id="Engineers">
-          <div class="Engineer Card Container">
-            <div
-              class="Img Notext"
-              style="background-image:url(https://img.ifunny.co/images/090dec19d8591d21945a3fee02930e1d93417466382a4526114ab3a2df5d95de_1.jpg); width:225px; height:160px;"
-            >
-              <img alt="Chad" />
-            </div>
-            <h2>Juan Castillo</h2>
-            <div class="Info">
-              <iconify-icon icon="ph:newspaper" width="20px"></iconify-icon>
-              <span>30</span>
-            </div>
-          </div>
-        </div>
+        <div id="Engineers"></div>
       </div>
     </div>
   </div>
@@ -98,6 +174,10 @@ let { fullAstroPathname, langPathname } = dissectPathname(Astro.url.pathname);
   }
 
   #Societies {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 20px;
     margin-bottom: 48px;
     positon: relative;
   }
@@ -158,6 +238,7 @@ let { fullAstroPathname, langPathname } = dissectPathname(Astro.url.pathname);
 
   #Society {
     position: relative;
+    width: 100%;
   }
 
   #Society:not(.Hidden) {
@@ -165,7 +246,11 @@ let { fullAstroPathname, langPathname } = dissectPathname(Astro.url.pathname);
   }
 
   @keyframes appear {
-    from { opacity: 0 } to {}
+    from {
+      opacity: 0;
+    }
+    to {
+    }
   }
 
   #Society > header {
@@ -186,14 +271,18 @@ let { fullAstroPathname, langPathname } = dissectPathname(Astro.url.pathname);
   }
 
   #Society > #Engineers {
-    margin-left: 282px;
+    margin-left: 30.5vw;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
   }
 
   #Society > #Info {
     position: absolute;
     margin-left: 20px;
-    min-width: 20px;
-    top: 286px;
+    width: 23vw;
+    top: 276px;
     box-shadow: 0px 1px 6px 2px #0000000f;
     padding: 20px;
     background-color: var(--theme-back);
@@ -203,12 +292,32 @@ let { fullAstroPathname, langPathname } = dissectPathname(Astro.url.pathname);
     border-bottom: 1px solid var(--theme-stroke);
     font-weight: 600;
     padding-bottom: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
   }
 
   #Society > #Info > .Options > * {
     margin: 0px 5px;
     padding: 0 5px;
     font-weight: 600;
+    border: none;
+    background: none;
+    padding: 7px;
+    border-radius: 3px;
+  }
+
+  #Society > #Info > .Options > *:hover {
+    background: var(--theme-stroke);
+    cursor: pointer;
+  }
+
+  #Society > #Info > .Options > *:active {
+    background-color: var(--theme-back);
+  }
+
+  #Society > #Info > .Options > *:focus {
+    background-color: var(--theme-stroke);
   }
 
   #Society > #Info > .Text {

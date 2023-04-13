@@ -2,7 +2,7 @@
 import { dissectPathname } from "../shenanigans/routing";
 
 const chapter = ["Computer", "IoT", "RAS", "SSIT", "IAS", "EMB"];
-const type = ["News", "Blogs"];
+const { text } = Astro.props;
 let { fullAstroPathname } = dissectPathname(Astro.url.pathname);
 ---
 
@@ -36,11 +36,11 @@ let { fullAstroPathname } = dissectPathname(Astro.url.pathname);
 
 <div id="Filter" class="Container" data-pathname={fullAstroPathname}>
   <header>
-    <strong class="Post-caption">Filter</strong>
+    <strong class="Post-caption">{text[0]}</strong>
   </header>
   <div>
     <div id="ChapterFilter">
-      <h1 class="Subtitile">By Chapter</h1>
+      <h1 class="Subtitile">{text[1]}</h1>
       {
         chapter.map((chaptername) => (
           <ul>
@@ -58,22 +58,27 @@ let { fullAstroPathname } = dissectPathname(Astro.url.pathname);
       }
     </div>
     <div id="TypeFilter">
-      <h1 class="Subtitile">By Type</h1>
-      {
-        type.map((typename) => (
+      <h1 class="Subtitile">{text[2]}</h1>
           <ul>
             <li>
               <a
                 class="li"
-                data-typename={typename}
+                data-typename={text[3]}
                 href=""
               >
-                {typename}
+                {text[3]}
+              </a>
+            </li>
+            <li>
+              <a
+                class="li"
+                data-typename={text[4]}
+                href=""
+              >
+                {text[4]}
               </a>
             </li>
           </ul>
-        ))
-      }
     </div>
   </div>
 </div>
