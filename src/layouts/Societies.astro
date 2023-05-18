@@ -10,6 +10,31 @@ let { fullAstroPathname, langPathname, lang } = dissectPathname(
 
 import societies from "../data/societies";
 import engineers from "../data/engineers";
+
+const getUniques = (arr: {}[], prop: string) => {
+  let uniqueBuffer: any = [];
+  let uniqueResult: any = [];
+  arr.forEach((arrItem: any) => {
+    uniqueBuffer.find((buffer: any) => buffer === arrItem[prop]) == undefined
+      ? uniqueBuffer.push(arrItem[prop])
+      : uniqueBuffer.push(null);
+  });
+  uniqueBuffer.forEach((buffer: any) => {
+    buffer === null
+      ? null
+      : uniqueResult.push(arr[uniqueBuffer.indexOf(buffer)]);
+  });
+  return uniqueResult;
+};
+
+let engineersBySociety: { [key: string]: any } = {};
+getUniques(engineers, "society").forEach((e) => {
+  const societyName = societies[e.society].name.toLowerCase();
+  engineersBySociety[societyName] = [];
+});
+engineers.forEach((e) => {
+  engineersBySociety[societies[e.society].name.toLowerCase()].push(e);
+});
 ---
 
 <script>
@@ -46,9 +71,10 @@ import engineers from "../data/engineers";
     <div class="Engineer Card Container">
       <div
         class="Img Notext"
-        style="background-image:url(${img}); width:225px; height:160px;"
-      >
-        <img alt="Chad" />
+        style="background-image:url(${img});
+        border-radius: 5px; width:225px;
+        height:160px;">
+        <img alt="Foto de ${name}" />
       </div>
       <h2>${name}</h2>
       <div class="Info">
@@ -74,12 +100,28 @@ import engineers from "../data/engineers";
           societies[societyIndex][lang].mission;
         societyElm.querySelector("#Vision").textContent =
           societies[societyIndex][lang].vision;
-        societyElm.classList.toggle("Hidden");
-        societyElm.querySelector("#Engineers").innerHTML = ''
-        societyElm.querySelector("#Engineers").innerHTML = engineersBySociety[societies[societyIndex].name.toLowerCase()].map(e => engineerCardElm(e.name, e.img))
-        societyElm.querySelector("#Engineers").innerHTML = document.querySelector("#Engineers").innerHTML.replace(',', '');
+        societyElm.classList.contains("Hidden")
+          ? societyElm.classList.toggle("Hidden")
+          : () => {};
+        societyElm.querySelector(
+          "#Society > header > div.Img.Notext"
+        ).style.backgroundImage = `url('${societies[societyIndex].logo}')`;
+        societyElm.querySelector(
+          "#Society > header > div.Img.Notext > img"
+        ).alt = `Logotipo de ${societies[societyIndex].name}`;
+        societyElm.querySelector("#Engineers").innerHTML = "";
+        societyElm.querySelector("#Engineers").innerHTML = engineersBySociety[
+          societies[societyIndex].name.toLowerCase()
+        ].map((e) => engineerCardElm(e.name, e.img));
+        societyElm.querySelector("#Engineers").innerHTML = document
+          .querySelector("#Engineers")
+          .innerHTML.replace(",", "");
         setTimeout(
-          () => scrollTo(0, societyElm.getBoundingClientRect().y),
+          () =>
+            scrollTo(
+              0,
+              societyElm.getBoundingClientRect().y + window.pageYOffset
+            ),
           300
         );
       });
@@ -96,13 +138,20 @@ import engineers from "../data/engineers";
     });
   };
 
+  document.querySelector("#Society > #Close").addEventListener("click", () => {
+    scrollTo(0, 0);
+    setTimeout(
+      () => document.querySelector("#Society").classList.toggle("Hidden"),
+      300
+    );
+  });
+
   document
     .querySelectorAll("#Society > #Info > .Options > button")
     .forEach((b) => {
       console.log(b);
       b.addEventListener("click", (e) => revealInfo(e.target.dataset.info));
     });
-
 </script>
 
 <EveryPage>
@@ -121,7 +170,7 @@ import engineers from "../data/engineers";
             <h2>{s.name}</h2>
             <div class="Info">
               <Icon name="ph:users" width="20px" />
-              <span>[Error]</span>
+              <span>{engineersBySociety[s.name.toLowerCase()].length}</span>
               <Icon name="ph:newspaper" width="20px" />
               <span>[Error]</span>
             </div>
@@ -131,26 +180,32 @@ import engineers from "../data/engineers";
       <div
         id="Society"
         class="Hidden Container"
-        style="padding: 0; padding-bottom: 20px; overflow: clip; margin-top: 30px;"
+        style="padding: 0; position: relative; padding-bottom: 20px; overflow: clip; margin-top: 30px;"
       >
+        <button id="Close">
+          <Icon name="ph:x-bold" color="white" style="" width="24px" />
+        </button>
         <div
           class="Img Notext"
-          style="background-image: url(https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80); width: 100%; height: 200px;"
+          style="
+          background-image: url(https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80);
+          width: 100%;
+          height: 200px;"
         >
           <img alt="XD" />
         </div>
         <header
           style="position: relative; border-bottom: 1px solid var(--theme-stroke); margin-bottom: 15px;"
         >
-          <div class="Img Notext" style="background-image:url();">
+          <div class="Img Notext" style="">
             <img alt="Loguito" />
           </div>
-          <Icon
+          <!--<Icon
             name="ph:user-circle"
             width="100px"
             style="position: absolute; top: -30px;"
-          />
-          <h1 id="Name">Computer Society</h1>
+          />-->
+          <h1 id="Name"></h1>
         </header>
         <div id="Info" class="Container">
           <div class="Options">
@@ -254,7 +309,7 @@ import engineers from "../data/engineers";
   }
 
   #Society > header {
-    min-height: 128px;
+    min-height: 140px;
   }
 
   #Society > * {
@@ -263,7 +318,21 @@ import engineers from "../data/engineers";
 
   #Society h1 {
     margin-top: 10px;
-    padding-left: 105px;
+    padding-left: 115px;
+  }
+
+  #Society > header > .Img.Notext {
+    z-index: 1;
+    position: absolute;
+    top: -27px;
+    border: 1px solid var(--theme-stroke);
+    border-radius: 300px;
+    width: 100px;
+    aspect-ratio: 1/1;
+    background-position: center;
+  }
+
+  .Engineer.Card > div.Img.Notext {
   }
 
   .Engineer.Card > .Info > *:not(:nth-child(1)) {
@@ -282,7 +351,7 @@ import engineers from "../data/engineers";
     position: absolute;
     margin-left: 20px;
     width: 23vw;
-    top: 276px;
+    top: 288.5px;
     box-shadow: 0px 1px 6px 2px #0000000f;
     padding: 20px;
     background-color: var(--theme-back);
@@ -322,5 +391,25 @@ import engineers from "../data/engineers";
 
   #Society > #Info > .Text {
     padding-top: 20px;
+  }
+
+  #Society > #Close {
+    position: absolute;
+    aspect-ratio: 1/1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+    right: 0;
+    border-radius: 100%;
+    padding: 10px;
+    margin: 15px;
+    border: none;
+    background-color: rgba(255 255 255 / 0.4);
+  }
+
+  #Society > #Close:hover {
+    background-color: rgba(255 255 255 / 0.6);
+    cursor: pointer;
   }
 </style>

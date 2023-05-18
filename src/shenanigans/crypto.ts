@@ -1,10 +1,13 @@
 import fs, { PathLike } from "fs";
 import path from "path";
+import { readJSONFile } from "./files";
 
 // CFUEN + ChatGPT
 const generateIdForArticlesInFolder = (folderPath: PathLike, prefix: string) => {
   const jsonFilePath: PathLike = "src/data/article-ids.json";
 
+  // Read the existing UUIDs from the JSON file, or create an empty object
+  
   // Read the existing UUIDs from the JSON file, or create an empty object
   let fileIDs = {};
   if (fs.existsSync(jsonFilePath)) {

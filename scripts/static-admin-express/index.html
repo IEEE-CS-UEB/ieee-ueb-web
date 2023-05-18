@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Static Admin</title>
+  <script src="//unpkg.com/alpinejs" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/iconify-icon@1.0.7/dist/iconify-icon.min.js"></script>
+  <link rel="stylesheet" href="https://ieee-cs-ueb.github.io/Flora/src/flora.css" />
+</head>
+
+<body class="ieee-light">
+  <h1>IEEE-UEB-WEB Static Admin</h1>
+  <div x-data="{ engineers: [], societies: [] }" x-init="
+        fetch('engineers.json')
+            .then(response => response.json())
+            .then(data => engineers = data)
+            .catch(error => console.error(error));
+        fetch('societies.json')
+            .then(response => response.json())
+            .then(data => societies = data)
+            .catch(error => console.error(error));
+        ">
+    <h2>Engineers</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Image</th>
+          <th>Society</th>
+          <th>Role</th>
+          <th>Specs</th>
+        </tr>
+      </thead>
+      <tbody>
+        <template x-for="(engineer, index) in engineers" :key="index">
+          <tr x-data="{ edit: false }" style="max-height: 80px;">
+            <td style="max-width: 160px;">
+              <span x-show="!edit" x-text="engineer.name"></span>
+              <input x-show="edit" x-model="engineer.name" type="text" style="width: 120px">
+            </td>
+            <td style="width: 300px; text-overflow: ellipsis;">
+              <div class="Img" x-bind:style="
+                                'background-image: url('+engineer.img+');'+
+                                ' width: 60px; aspect-ratio: 1/1;' +
+                                ' border-radius: 5px;'
+                            "></div>
+              <span x-show="!edit" x-text="engineer.img"></span>
+              <input x-show="edit" x-model="engineer.img" type="text">
+            </td>
+            <td style="width: 200px">
+              <span x-show="!edit" x-text="societies[engineer.society].name"></span>
+              <input style="width: 120px" x-show="edit" x-model="societies[engineer.society].name" type="text">
+            </td>
+            <td style="width: 200px">
+              <span x-show="!edit" x-text="engineer.en.role"></span>
+              <input style="width: 120px" x-show="edit" x-model="engineer.en.role" type="text">
+            </td>
+            <td x-text="engineer.en.specs"></td>
+            <td style="
+                            display: flex;
+                            flex-direction: row;
+                            justify-content: center;
+                            width: 160px;
+                        "><button class="Primary" x-show="!edit" x-on:click="edit = !edit">
+                <iconify-icon icon="ph:note-pencil" width="24px" style="color:white; aspect-ratio: 1/1;"></iconify-icon>
+              </button>
+              <button class="Primary" x-show="edit"
+                x-on:click="async () => {
+                  console.log(JSON.stringify(engineers));
+                  await fetch('http:\/\/localhost:3000\/engineers\/update',
+                    {method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(engineers)}
+                  );
+                  edit = !edit;
+                }">
+                <!-- acá -->
+                <iconify-icon icon="ph:check-square-offset" width="24px"
+                  style="color:white; aspect-ratio: 1/1;"></iconify-icon>
+              </button>
+              <button class="Primary" x-show="edit" x-on:click="edit = !edit">
+                <iconify-icon icon="ph:x" width="24px" style="color:white; aspect-ratio: 1/1;"></iconify-icon>
+              </button>
+            </td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
+</body>
+
+<style>
+  table {
+    border: 1px solid var(--theme-stroke);
+    border-collapse: collapse;
+    overflow: hidden;
+  }
+
+  table thead {
+    border-bottom: 1px solid var(--theme-stroke);
+  }
+
+  table th,
+  table td {
+    padding: 15px;
+    margin: 0;
+  }
+
+  td:not(:nth-of-type(1)) {
+    border-left: 1px solid var(--theme-stroke);
+  }
+</style>
+
+</html>

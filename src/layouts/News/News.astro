@@ -4,12 +4,11 @@ import Post from "../../components/ArticlePreview/ArticlePreview.astro";
 import Filter from "../../components/Filter.astro";
 import EveryPage from "../EveryPage.astro";
 import { dissectPathname } from "../../shenanigans/routing";
-import axios from "axios";
 import fs from "fs";
 
 const { lang } = dissectPathname(Astro.url.pathname);
 const { filterText } = Astro.props.frontmatter;
-console.log(filterText)
+// console.log(filterText)
 
 const allPosts = await Astro.glob("../../pages/*/posts/*.md");
 //console.log(allPosts)
@@ -40,15 +39,13 @@ const getArticleID = (articleName: string) => {
 
 // POSTS VIEWS
 // Primero sin paginación, luego se agrega
-let postViewsData = await axios.request({
+let postViewsData = await fetch(import.meta.env.REPLIT_DB_URL, {
   method: "GET",
-  url: "https://ieee-ueb-db.cfuendev.repl.co/views",
   headers: { "content-type": "application/json" },
 });
 
-//console.log(postViewsData.data);
-
-const postViews: [{ id; article_id; article_views }] = await postViewsData.data;
+// FIXME: ESTA MIERDA NO SIRVE
+const postViews: [{ id; article_id; article_views }] = await postViewsData.json();
 
 const getPostViewsFromID = (id: number) => {
   if (postViews || postViews?.find) {

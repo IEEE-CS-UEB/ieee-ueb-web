@@ -1,0 +1,26 @@
+---
+import { Icon } from "astro-icon";
+---
+
+<button class="Primary" id="Top"
+  ><Icon name="ph:arrow-up-bold" width="30" /></button
+>
+<script>
+  document
+    .querySelector("#Top")
+    .addEventListener("click", () => scrollTo(0, 0));
+</script>
+
+<style>
+  button#Top {
+    border-radius: 200px;
+    aspect-ratio: 1/1;
+    position: absolute;
+    right: 30px;
+    bottom: -80px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
+</style>

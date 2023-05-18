@@ -26,37 +26,28 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// src/shenanigans/crypto.ts
-var crypto_exports = {};
-__export(crypto_exports, {
-  generateIdForArticlesInFolder: () => generateIdForArticlesInFolder
+// src/shenanigans/files.ts
+var files_exports = {};
+__export(files_exports, {
+  copyFileAToFileB: () => copyFileAToFileB,
+  readJSONFile: () => readJSONFile
 });
-module.exports = __toCommonJS(crypto_exports);
+module.exports = __toCommonJS(files_exports);
 var import_fs = __toESM(require("fs"));
-var import_path = __toESM(require("path"));
-var generateIdForArticlesInFolder = (folderPath, prefix) => {
-  const jsonFilePath = "src/data/article-ids.json";
-  let fileIDs = {};
+var readJSONFile = (jsonFilePath) => {
   if (import_fs.default.existsSync(jsonFilePath)) {
     const jsonContent = import_fs.default.readFileSync(jsonFilePath, "utf-8");
-    fileIDs = JSON.parse(jsonContent);
+    return JSON.parse(jsonContent);
+  } else {
+    throw new Error("Ni mierdas");
   }
-  import_fs.default.readdirSync(folderPath).filter((filename) => import_path.default.extname(filename).toLowerCase() === ".md").forEach((filename) => {
-    const saltyName = filename.replace(/\.md/gm, "").replace(/\s+/gm, "-").toLowerCase();
-    const filePath = import_path.default.join(folderPath.toString(), filename);
-    const stat = import_fs.default.statSync(filePath);
-    if (stat.isFile() && saltyName != "index") {
-      const fileID = Object.keys(fileIDs[prefix]).length + 1;
-      if (!fileIDs[prefix][saltyName]) {
-        fileIDs[prefix][saltyName] = fileID;
-        console.log(`Updated ID for file: ${saltyName} (${filename})`);
-      }
-    }
-  });
-  import_fs.default.writeFileSync(jsonFilePath, JSON.stringify(fileIDs, null, 2));
-  console.log("Done");
+};
+var copyFileAToFileB = (a_url, b_url) => {
+  const a = import_fs.default.readFileSync(a_url, "utf-8");
+  import_fs.default.writeFileSync(b_url, a, "utf-8");
 };
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  generateIdForArticlesInFolder
+  copyFileAToFileB,
+  readJSONFile
 });
