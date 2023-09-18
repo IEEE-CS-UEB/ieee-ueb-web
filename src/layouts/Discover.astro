@@ -5,6 +5,8 @@ import { dissectPathname } from "../shenanigans/routing";
 
 const { frontmatter } = Astro.props;
 let { fullAstroPathname, langPathname } = dissectPathname(Astro.url.pathname);
+
+
 ---
 <script>
   const hideSectionWithTransition = (button, parent)=>{
@@ -65,7 +67,7 @@ let { fullAstroPathname, langPathname } = dissectPathname(Astro.url.pathname);
         {
           frontmatter.firstLayerTopics.map((topic) => (
 
-        <button class="InterestCard" data-href={`${langPathname}/societies/${topic.href}`}>
+        <button class="InterestCard" data-href={`${langPathname}/societies?s=${topic.href}`}>
           <header class="Container">
             <Icon width="50px" name={topic.icon} />
             <span>{topic.name}</span>

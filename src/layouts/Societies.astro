@@ -40,6 +40,9 @@ engineers.forEach((e) => {
 <script>
   import societies from "../data/societies";
   import engineers from "../data/engineers";
+  const s = new URLSearchParams(window.location.search).get("s");
+  console.log(`society: ${s}`);
+
   let societyIndex: number = 0;
 
   const getUniques = (arr: {}[], prop: string) => {
@@ -152,6 +155,42 @@ engineers.forEach((e) => {
       console.log(b);
       b.addEventListener("click", (e) => revealInfo(e.target.dataset.info));
     });
+
+  if (s !== undefined) {
+    const whichSociety = societies.find((sc) => sc.name.toLowerCase() === s.replace('_', ' '))
+    const societyElm: HTMLElement = document.querySelector("#Society");
+    // Change societyElm (#Society)
+    societyElm.querySelector("#Name").textContent =
+      whichSociety.name;
+    const lang = document.querySelector(".Page").dataset.lang;
+    societyElm.querySelector("#Description").textContent =
+      whichSociety[lang].desc;
+    societyElm.querySelector("#Mission").textContent =
+      whichSociety[lang].mission;
+    societyElm.querySelector("#Vision").textContent =
+      whichSociety[lang].vision;
+    societyElm.classList.contains("Hidden")
+      ? societyElm.classList.toggle("Hidden")
+      : () => {};
+    societyElm.querySelector(
+      "#Society > header > div.Img.Notext"
+    ).style.backgroundImage = `url('${whichSociety.logo}')`;
+    societyElm.querySelector(
+      "#Society > header > div.Img.Notext > img"
+    ).alt = `Logotipo de ${whichSociety.name}`;
+    societyElm.querySelector("#Engineers").innerHTML = "";
+    societyElm.querySelector("#Engineers").innerHTML = engineersBySociety[
+      whichSociety.name.toLowerCase()
+    ].map((e) => engineerCardElm(e.name, e.img));
+    societyElm.querySelector("#Engineers").innerHTML = document
+      .querySelector("#Engineers")
+      .innerHTML.replace(",", "");
+    setTimeout(
+      () =>
+        scrollTo(0, societyElm.getBoundingClientRect().y + window.pageYOffset),
+      300
+    );
+  }
 </script>
 
 <EveryPage>

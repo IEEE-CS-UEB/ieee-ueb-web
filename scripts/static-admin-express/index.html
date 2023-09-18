@@ -8,23 +8,26 @@
   <title>Static Admin</title>
   <script src="//unpkg.com/alpinejs" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/iconify-icon@1.0.7/dist/iconify-icon.min.js"></script>
-  <link rel="stylesheet" href="https://ieee-cs-ueb.github.io/Flora/src/flora.css" />
+  <link rel="stylesheet" href="https://ieee-cs-ueb.github.io/Flora/src/css/flora.css" />
 </head>
 
-<body class="ieee-light">
+<body x-data="{ darkTheme: true }" x-bind:class="darkTheme ? 'dark' : 'ieee-light'">
   <h1>IEEE-UEB-WEB Static Admin</h1>
-  <div x-data="{ engineers: [], societies: [] }" x-init="
-        fetch('engineers.json')
-            .then(response => response.json())
-            .then(data => engineers = data)
-            .catch(error => console.error(error));
+  <div x-data="{ engineers: undefined, societies: undefined, which: 0, english: true }" x-init="
         fetch('societies.json')
             .then(response => response.json())
             .then(data => societies = data)
             .catch(error => console.error(error));
+        fetch('engineers.json')
+            .then(response => response.json())
+            .then(data => engineers = data)
+            .catch(error => console.error(error));
         ">
-    <h2>Engineers</h2>
-    <table>
+    <button class="Tertiary Simpler" @click="which = 0">Engineers</button>
+    <button class="Tertiary Simpler" @click="which = 1">Societies</button>
+    <button class="Tertiary Simpler" @click="english = !english" x-text="english ? 'Language: English' : 'Language: Spanish'"></button>
+    <button class="Tertiary Simpler" @click="darkTheme = !darkTheme" x-text="darkTheme ? 'Theme: Dark' : 'Theme: Light'"></button>
+    <table x-show="which === 0">
       <thead>
         <tr>
           <th>Name</th>
@@ -35,61 +38,178 @@
         </tr>
       </thead>
       <tbody>
-        <template x-for="(engineer, index) in engineers" :key="index">
-          <tr x-data="{ edit: false }" style="max-height: 80px;">
-            <td style="max-width: 160px;">
-              <span x-show="!edit" x-text="engineer.name"></span>
-              <input x-show="edit" x-model="engineer.name" type="text" style="width: 120px">
-            </td>
-            <td style="width: 300px; text-overflow: ellipsis;">
-              <div class="Img" x-bind:style="
-                                'background-image: url('+engineer.img+');'+
+        <template x-if="engineers">
+          <template x-for="(engineer, index) in engineers" :key="index">
+            <tr x-data="{ edit: false, cache: {}, real: engineer }" style="max-height: 80px;">
+              <td style="max-width: 160px;">
+                <span x-show="!edit" x-text="real.name"></span>
+                <input x-show="edit" x-model="real.name" type="text" style="width: 80%">
+              </td>
+              <td style="width: 300px; text-overflow: ellipsis; overflow: hidden;">
+                <div class="Img" x-bind:style="
+                                'background-image: url('+real.img+');'+
                                 ' width: 60px; aspect-ratio: 1/1;' +
                                 ' border-radius: 5px;'
                             "></div>
-              <span x-show="!edit" x-text="engineer.img"></span>
-              <input x-show="edit" x-model="engineer.img" type="text">
-            </td>
-            <td style="width: 200px">
-              <span x-show="!edit" x-text="societies[engineer.society].name"></span>
-              <input style="width: 120px" x-show="edit" x-model="societies[engineer.society].name" type="text">
-            </td>
-            <td style="width: 200px">
-              <span x-show="!edit" x-text="engineer.en.role"></span>
-              <input style="width: 120px" x-show="edit" x-model="engineer.en.role" type="text">
-            </td>
-            <td x-text="engineer.en.specs"></td>
-            <td style="
-                            display: flex;
-                            flex-direction: row;
-                            justify-content: center;
-                            width: 160px;
-                        "><button class="Primary" x-show="!edit" x-on:click="edit = !edit">
-                <iconify-icon icon="ph:note-pencil" width="24px" style="color:white; aspect-ratio: 1/1;"></iconify-icon>
-              </button>
-              <button class="Primary" x-show="edit"
-                x-on:click="async () => {
-                  console.log(JSON.stringify(engineers));
+                <span x-show="!edit" x-text="real.img"></span>
+                <input x-show="edit" x-model="real.img" type="text" style="width: 80%">
+              </td>
+              <td style="width: 200px">
+                <span x-show="!edit" x-text="societies[real.society].name"></span>
+                <input style="width: 80%;" x-show="edit" x-model="societies[real.society].name" type="text">
+              </td>
+              <td style="width: 200px">
+                <span x-show="!edit" x-text="real[english ? 'en' : 'es'].role"></span>
+                <input style="width: 80%;" x-show="edit" x-model="real[english ? 'en' : 'es'].role" type="text">
+              </td>
+              <td>
+                <template x-for="(spec, index) in engineer[english ? 'en' : 'es'].specs" :key="index">
+                  <input style="width: 80%" x-show="edit" x-model="spec" type="text">
+                </template>
+                <template x-for="(spec, index) in engineer[english ? 'en' : 'es'].specs" :key="index">
+                  <span x-show="!edit" x-text="spec"></span>
+                </template>
+              </td>
+              <td style="display: flexbox; flex-direction: row; justify-content: center;">
+                <button class="Primary" x-show="!edit" x-on:click="() => {cache = JSON.parse(JSON.stringify(real)); edit = !edit}">
+                  <iconify-icon icon="ph:note-pencil" width="24px"
+                    style="color:white; aspect-ratio: 1/1;"></iconify-icon>
+                </button>
+                <button class="Primary" x-show="edit" x-on:click="async () => {
                   await fetch('http:\/\/localhost:3000\/engineers\/update',
-                    {method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(engineers)}
+                    {method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(real)}
                   );
                   edit = !edit;
                 }">
-                <!-- acá -->
-                <iconify-icon icon="ph:check-square-offset" width="24px"
-                  style="color:white; aspect-ratio: 1/1;"></iconify-icon>
-              </button>
-              <button class="Primary" x-show="edit" x-on:click="edit = !edit">
-                <iconify-icon icon="ph:x" width="24px" style="color:white; aspect-ratio: 1/1;"></iconify-icon>
-              </button>
-            </td>
-          </tr>
+                  <iconify-icon icon="ph:check-square-offset" width="24px"
+                    style="color:white; aspect-ratio: 1/1;"></iconify-icon>
+                </button>
+                <button class="Primary" x-show="edit" x-on:click="() => {edit = !edit; real = JSON.parse(JSON.stringify(cache))}">
+                  <iconify-icon icon="ph:x" width="24px" style="color:white; aspect-ratio: 1/1;"></iconify-icon>
+                </button>
+              </td>
+            </tr>
+          </template>
+        </template>
+      </tbody>
+    </table>
+    <table x-show="which === 1">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Image</th>
+          <th>Logo</th>
+          <th>Banner</th>
+          <th>Desc.</th>
+          <th>Miss.</th>
+          <th>Vis.</th>
+        </tr>
+      </thead>
+      <tbody>
+        <template x-if="societies">
+          <template x-for="(society, index) in societies" :key="index">
+            <tr x-data="{ edit: false, cache: {}, real: society }" style="max-height: 80px;">
+              <td style="max-width: 160px;">
+                <span x-show="!edit" x-text="real.name"></span>
+                <input x-show="edit" x-model="real.name" type="text" style="width: 80%;">
+              </td>
+              <td style="max-width: 200px; text-overflow: ellipsis; overflow: hidden;">
+                <div class="Img" x-bind:style="
+                                'background-image: url('+real.img+');'+
+                                ' width: 60px; aspect-ratio: 1/1;' +
+                                ' border-radius: 5px;'
+                            "></div>
+                <span x-show="!edit" x-text="real.img"></span>
+                <input style="width: 80%;" x-show="edit" x-model="real.img" type="text">
+              </td>
+              <td style="max-width: 300px; text-overflow: ellipsis; overflow: hidden;">
+                <div class="Img" x-bind:style="
+                                'background-image: url('+real.logo+');'+
+                                ' width: 60px; aspect-ratio: 1/1;' +
+                                ' border-radius: 5px;'
+                            "></div>
+                <span x-show="!edit" x-text="real.logo"></span>
+                <input x-show="edit" x-model="real.logo" type="text" style="width: 80%;">
+              </td>
+              <td style="max-width: 300px; text-overflow: ellipsis; overflow: hidden;">
+                <div class="Img" x-bind:style="
+                                'background-image: url('+real.banner+');'+
+                                ' width: 120px; aspect-ratio: 16/9;' +
+                                ' border-radius: 5px;'
+                            "></div>
+                <span x-show="!edit" x-text="real.banner"></span>
+                <input x-show="edit" x-model="real.banner" type="text" style="width: 80%;">
+              </td>
+              <td>
+                <span x-show="!edit" x-text="real[english ? 'en' : 'es'].desc"></span>
+                <textarea x-show="edit" x-model="real[english ? 'en' : 'es'].desc"></textarea>
+              </td>
+              <td>
+                <span x-show="!edit" x-text="real[english ? 'en' : 'es'].mission"></span>
+                <textarea x-show="edit" x-model="real[english ? 'en' : 'es'].mission" type="text"></textarea>
+              </td>
+              <td>
+                <span x-show="!edit" x-text="real[english ? 'en' : 'es'].vision"></span>
+                <textarea x-show="edit" x-model="real[english ? 'en' : 'es'].vision" type="text"></textarea>
+              </td>
+              <td style="display: flexbox; flex-direction: row; justify-content: center;">
+                <button class="Primary" x-show="!edit" x-on:click="() => {cache = JSON.parse(JSON.stringify(real)); edit = !edit}">
+                  <iconify-icon icon="ph:note-pencil" width="24px"
+                    style="color:white; aspect-ratio: 1/1;"></iconify-icon>
+                </button>
+                <button class="Primary" x-show="edit" x-on:click="async () => {
+                  await fetch('http:\/\/localhost:3000\/societies\/update',
+                    {method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(real)}
+                  );
+                  edit = !edit;
+                }">
+                  <iconify-icon icon="ph:check-square-offset" width="24px"
+                    style="color:white; aspect-ratio: 1/1;"></iconify-icon>
+                </button>
+                <button class="Primary" x-show="edit" x-on:click="() => {edit = !edit; real = JSON.parse(JSON.stringify(cache))}">
+                  <iconify-icon icon="ph:x" width="24px" style="color:white; aspect-ratio: 1/1;"></iconify-icon>
+                </button>
+              </td>
+            </tr>
+          </template>
         </template>
       </tbody>
     </table>
 </body>
 
 <style>
+  body.dark {
+    --theme-back: #0d1316;
+    --theme-for1: #ddedff;
+    --theme-for2: #acdbf2;
+    --theme-back1: #f3f3f3;
+    --theme-main: #006699;
+    --theme-dim1: #006699;
+    --theme-glo1: #78bde0;
+    --theme-glo2: #151f24;
+    --theme-glo3: #f8f9fa;
+    --theme-glo4: #454f5b;
+    --theme-glo5: #ACDBF2;
+    --theme-stroke: #31baff32;
+    --theme-stroke2: #6A737B;
+  }
+
+  textarea {
+    border-radius: 8px;
+    border: 1px solid var(--theme-stroke2);
+    background: transparent;
+    color: var(--theme-stroke2);
+    width: 80%;
+    outline: none;
+    padding: 10px;
+    transition: all 10ms ease-in-out 50ms;
+  }
+
+  table td:hover textarea {
+    width: 200px;
+    height: 70px;
+  }
+
   table {
     border: 1px solid var(--theme-stroke);
     border-collapse: collapse;
@@ -104,6 +224,20 @@
   table td {
     padding: 15px;
     margin: 0;
+    overflow: hidden;
+  }
+
+  table td {
+    vertical-align: bottom;
+  }
+
+  table td:nth-of-type(5) {
+    display: flexbox;
+    flex-wrap: wrap;
+  }
+
+  table td span:not(:first-of-type) {
+    margin-left: 10px;
   }
 
   td:not(:nth-of-type(1)) {
