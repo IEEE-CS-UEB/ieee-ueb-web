@@ -3,6 +3,8 @@ import EveryPage from "./EveryPage.astro";
 const { frontmatter } = Astro.props;
 
 let langPathname = Astro.url.pathname.length > 3 ? Astro.url.pathname.replace(/\/\w+$/, '') : Astro.url.pathname
+langPathname.charAt[langPathname.length -1] !== '/' ? langPathname += '/' : ()=>{}
+console.log(langPathname)
 ---
 
 <EveryPage>
