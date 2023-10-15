@@ -1,4 +1,4 @@
-import { CmsCollection } from "netlify-cms-core";
+import { type CmsCollection } from "netlify-cms-core";
 import societies from "../data/societies";
 import engineers from "../data/engineers";
 
