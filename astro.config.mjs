@@ -2,8 +2,6 @@ import { defineConfig } from 'astro/config';
 import NetlifyCMS from 'astro-netlify-cms';
 import { englishPosts, spanishPosts } from './src/schemas/posts';
 
-import react from "@astrojs/react";
-
 // https://astro.build/config
 export default defineConfig({
   integrations: [NetlifyCMS({
