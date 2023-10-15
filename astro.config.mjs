@@ -20,5 +20,5 @@ export default defineConfig({
       collections: [englishPosts, spanishPosts]
     },
     previewStyles: ['https://github.com/IEEE-CS-UEB/Flora/blob/dev/src/flora.css']
-  }), react()]
+  })]
 });

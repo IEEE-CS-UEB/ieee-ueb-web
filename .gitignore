@@ -21,3 +21,6 @@ pnpm-debug.log*
 
 # macOS-specific files
 .DS_Store
+
+# netlify.. hijo de la grandísima puta
+pnpm-lock.yaml
